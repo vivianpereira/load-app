@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Load App</string>
+    <string name="app_name">LoadApp</string>
     <string name="app_description">Download files from Internet</string>
     <string name="action_settings">Settings</string>
 
@@ -20,4 +20,7 @@
     <string name="retrofit_download_link">https://github.com/square/retrofit</string>
     <string name="file">File</string>
     <string name="status">Status</string>
+    <string name="toast_message_selected_file">Please select the file to download</string>
+    <string name="notification_channel_name" translatable="true">Downloads</string>
+    <string name="notification_channel_description" translatable="false">Downloads of the LoadApp</string>
 </resources>

@@ -18,16 +18,17 @@ class LoadingButton @JvmOverloads constructor(
 
     private var textSize: Float = resources.getDimension(R.dimen.default_text_size)
 
+    private var buttonTitle: String = ""
     private var buttonColor = 0
     private var loadingButtonColor = 0
     private var textColor = 0
-    private var buttonTitle: String = ""
+    private var loadingCircleColor = 0
 
     private var valueAnimator = ValueAnimator()
     private var progressButtonWidth = 0.0f
     private var progressCircle = 0f
 
-    private var circleColor = 0
+
     private var circleXOffset = textSize / 2
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -36,7 +37,7 @@ class LoadingButton @JvmOverloads constructor(
         textSize = LoadingButton::textSize.invoke(this@LoadingButton)
         typeface = Typeface.DEFAULT
     }
-    private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { _, _, _ ->
+    var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { _, _, _ ->
         when (buttonState) {
             ButtonState.Loading -> startAnimator()
             ButtonState.Completed -> completeDownload()
@@ -73,10 +74,10 @@ class LoadingButton @JvmOverloads constructor(
     init {
         buttonTitle = resources.getString(R.string.button_download)
         context.withStyledAttributes(set = attrs, attrs = R.styleable.LoadingButton) {
-            buttonColor = getColor(R.styleable.LoadingButton_ButtonColor, 0)
+            buttonColor = getColor(R.styleable.LoadingButton_buttonColor, 0)
             loadingButtonColor = getColor(R.styleable.LoadingButton_loadingButtonColor, 0)
-            textColor = getColor(R.styleable.LoadingButton_loadingTextColor, 0)
-            circleColor = getColor(R.styleable.LoadingButton_circleColor, 0)
+            textColor = getColor(R.styleable.LoadingButton_buttonTextColor, 0)
+            loadingCircleColor = getColor(R.styleable.LoadingButton_loadingCircleColor, 0)
         }
     }
 
@@ -105,7 +106,7 @@ class LoadingButton @JvmOverloads constructor(
                 widthSize / 2 + textWidth / 2 + circleXOffset,
                 heightSize / 2 - textSize / 2
             )
-            paint.color = circleColor
+            paint.color = loadingCircleColor
             drawArc(RectF(0f, 0f, textSize, textSize), 0F, progressCircle, true, paint)
             restore()
         }
