@@ -15,7 +15,6 @@ class LoadingButton @JvmOverloads constructor(
     private var widthSize = 0
     private var heightSize = 0
     private var textWidth = 0f
-
     private var textSize: Float = resources.getDimension(R.dimen.default_text_size)
 
     private var buttonTitle: String = ""
@@ -27,8 +26,6 @@ class LoadingButton @JvmOverloads constructor(
     private var valueAnimator = ValueAnimator()
     private var progressButtonWidth = 0.0f
     private var progressCircle = 0f
-
-
     private var circleXOffset = textSize / 2
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -41,33 +38,7 @@ class LoadingButton @JvmOverloads constructor(
         when (buttonState) {
             ButtonState.Loading -> startAnimator()
             ButtonState.Completed -> completeDownload()
-            else -> {}
         }
-    }
-
-    private fun startAnimator() {
-        buttonTitle = resources.getString(R.string.button_loading)
-        valueAnimator.setFloatValues(0.0f, width.toFloat())
-        valueAnimator.duration = 3000
-        valueAnimator.addUpdateListener {
-            progressButtonWidth = it.animatedValue as Float
-            progressCircle = (progressButtonWidth * 360f) / measuredWidth
-            if (progressButtonWidth < measuredWidth.toFloat()) {
-                invalidate()
-            } else {
-                buttonState = ButtonState.Completed
-            }
-        }
-        valueAnimator.start()
-    }
-
-    // call after downloading is completed
-    private fun completeDownload() {
-        valueAnimator.cancel()
-        buttonTitle = resources.getString(R.string.button_download)
-        progressCircle = 0f
-        progressButtonWidth = 0f
-        invalidate()
     }
 
     // initialize
@@ -87,6 +58,29 @@ class LoadingButton @JvmOverloads constructor(
         drawButtonProgress(canvas)
         drawButtonTitle(canvas)
         drawCircleProgress(canvas)
+    }
+
+    private fun startAnimator() {
+        buttonTitle = resources.getString(R.string.button_loading)
+        valueAnimator.setFloatValues(0.0f, width.toFloat())
+        valueAnimator.duration = 3000
+        valueAnimator.addUpdateListener {
+            progressButtonWidth = it.animatedValue as Float
+            progressCircle = (progressButtonWidth * 360f) / measuredWidth
+            if (progressButtonWidth < measuredWidth.toFloat()) {
+                invalidate()
+            } else {
+                buttonState = ButtonState.Completed
+            }
+        }
+        valueAnimator.start()
+    }
+    private fun completeDownload() {
+        valueAnimator.cancel()
+        buttonTitle = resources.getString(R.string.button_download)
+        progressCircle = 0f
+        progressButtonWidth = 0f
+        invalidate()
     }
 
     private fun drawButtonBackground(canvas: Canvas) {

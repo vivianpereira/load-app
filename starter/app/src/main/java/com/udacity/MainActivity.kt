@@ -26,9 +26,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedURL: String = ""
     private var fileName = ""
 
-    private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
-//    private lateinit var action: NotificationCompat.Action
+    private var notificationManager: NotificationManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,31 +68,32 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            if (notificationManager == null) {
+                notificationManager = ContextCompat.getSystemService(
+                    context!!,
+                    NotificationManager::class.java
+                ) as NotificationManager
+            }
 
-            notificationManager = ContextCompat.getSystemService(
-                context!!,
-                NotificationManager::class.java
-            ) as NotificationManager
-
-            notificationManager.createChannel()
+            notificationManager?.createChannel()
 
             if (downloadID == id) {
                 custom_button.buttonState = ButtonState.Completed
 
                 val query = DownloadManager.Query().setFilterById(id)
                 val downloadManager =
-                    context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                    context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 val cursor = downloadManager.query(query)
                 if (cursor.moveToFirst()) {
                     val downloadStatus =
                         cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
                     if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
-                        notificationManager.sendNotification(
+                        notificationManager?.sendNotification(
                             getString(R.string.notification_description_success),
                             getString(R.string.notification_button_success)
                         )
                     } else {
-                        notificationManager.sendNotification(
+                        notificationManager?.sendNotification(
                             getString(R.string.notification_description_error),
                             getString(R.string.notification_button_fail)
                         )
@@ -163,7 +162,7 @@ class MainActivity : AppCompatActivity() {
 
         val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         downloadID =
-            downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+            downloadManager.enqueue(request)
     }
 
     companion object {

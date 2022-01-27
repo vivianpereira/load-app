@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="@+id/file_name_text"
+        app:layout_constraintStart_toEndOf="@+id/file_name_title"
         app:layout_constraintTop_toTopOf="@+id/status_title"
         tools:text="@string/notification_button_success" />
 
