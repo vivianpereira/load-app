@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private var downloadID: Long = 0
     private var selectedURL: String = ""
+    private var fileName = ""
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
@@ -35,15 +36,18 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         radio_group_buttons.setOnCheckedChangeListener { _, index ->
-            selectedURL = when (index) {
+            when (index) {
                 1 -> {
-                    getString(R.string.loadApp_download_link)
+                    selectedURL = URL_GLIDE
+                    fileName = getString(R.string.glide_download)
                 }
                 2 -> {
-                    getString(R.string.glide_download_link)
+                    selectedURL = URL_UDACITY
+                    fileName = getString(R.string.loadApp_download)
                 }
                 else -> {
-                    getString(R.string.retrofit_download_link)
+                    selectedURL = URL_RETROFIT
+                    fileName = getString(R.string.retrofit_download)
                 }
             }
         }
@@ -85,22 +89,33 @@ class MainActivity : AppCompatActivity() {
                     val downloadStatus =
                         cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
                     if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
-                        notificationManager.sendNotification(getString(R.string.notification_description))
+                        notificationManager.sendNotification(
+                            getString(R.string.notification_description_success),
+                            getString(R.string.notification_button_success)
+                        )
                     } else {
-                        notificationManager.sendNotification("Falhou")
+                        notificationManager.sendNotification(
+                            getString(R.string.notification_description_error),
+                            getString(R.string.notification_button_fail)
+                        )
                     }
                 }
             }
         }
     }
 
-    fun NotificationManager.sendNotification(messageBody: String) {
-        val contentIntent = Intent(applicationContext, MainActivity::class.java)
+    fun NotificationManager.sendNotification(messageBody: String, status: String) {
+
+        val contentIntent = Intent(applicationContext, DetailActivity::class.java).apply {
+            putExtra(PARAM_STATUS, status)
+            putExtra(PARAM_FILE_NAME, fileName)
+        }
+
         val contentPendingIntent = PendingIntent.getActivity(
             applicationContext,
             NOTIFICATION_ID,
             contentIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
@@ -109,7 +124,13 @@ class MainActivity : AppCompatActivity() {
             .setContentTitle(getString(R.string.notification_title))
             .setContentText(messageBody)
             .setContentIntent(contentPendingIntent)
-//            .addAction(action)
+            .addAction(
+                NotificationCompat.Action.Builder(
+                    android.R.drawable.ic_input_get,
+                    getString(R.string.notification_check_the_status),
+                    contentPendingIntent
+                ).build()
+            )
             .setAutoCancel(true)
 
         notify(NOTIFICATION_ID, builder.build())
@@ -146,14 +167,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-//        private const val URL_UDACITY =
-//            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-//        private const val URL_GLIDE =
-//            "https://github.com/bumptech/glide/archive/master.zip"
-//        private const val URL_RETROFIT =
-//            "https://github.com/square/retrofit/archive/master.zip"
+        private const val URL_UDACITY =
+            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
+        private const val URL_GLIDE =
+            "https://github.com/bumptech/glide/archive/master.zip"
+        private const val URL_RETROFIT =
+            "https://github.com/square/retrofit/archive/master.zip"
         private const val CHANNEL_ID = "load_app_download"
         private const val NOTIFICATION_ID = 123
+        const val PARAM_STATUS = "PARAM_STATUS"
+        const val PARAM_FILE_NAME = "PARAM_FILE_NAME"
     }
 
 }
